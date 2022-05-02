@@ -85,9 +85,11 @@ if __name__ == '__main__':
     for param in vgg.parameters():
         param.requires_grad_(False)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    print(device)
     vgg.to(device)
-    content = load_image(r"D:\data\picture\content_1.jpg").to(device)
-    style = load_image(r"D:\data\picture\style_1.jpg").to(device)
+    content = load_image(r"D:\code\content_1.jpg").to(device)
+    style = load_image(r"D:\code\style_1.jpg").to(device)
     assert style.size() ==content.size()
     plt.ion()
     plt.figure()
