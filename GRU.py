@@ -6,22 +6,28 @@ import torch.optim
 import time
 
 class GRU(nn.Module):
-    def __init__(self, INPUT_SIZE):
+    def __init__(self, INPUT_SIZE, hidden_size):
         super(GRU, self).__init__()
         self.gru = nn.GRU(
             input_size=INPUT_SIZE,
-            hidden_size=20,
+            hidden_size=hidden_size,
             batch_first=True)
         self.InitHidden()
         self.hidden_cell = self.InitHidden()
-        self.out = nn.Linear(20, 1)
+        self.out = nn.Linear(self.gru.hidden_size * 3, 2)
+
     def forward(self, x, hidden_cell):
         r_out, self.hidden_cell = self.gru(x, hidden_cell)
-        outputs = self.out(r_out[0, :]).unsqueeze(0)
+        r_out = r_out.reshape(1, 9)
+        # outputs = self.out(r_out[0, :]).unsqueeze(0)
+        outputs = self.out(r_out).unsqueeze(0)
+
         return outputs, self.hidden_cell
 
     def InitHidden(self):
-        h_state = torch.rand(1, 1, 20)
+        # h_state = torch.rand(1, 1, self.gru.hidden_size)
+        h_state = torch.rand(1, self.gru.hidden_size)
+
         return h_state
 
 if __name__ == '__main__':
@@ -39,6 +45,7 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(gru.parameters(), lr=0.001)
     loss_func = nn.MSELoss()
     hidden_cell = gru.InitHidden()
+    print(hidden_cell)
 
     plt.figure(1, figsize=(12, 5))
     plt.ion()
@@ -56,6 +63,7 @@ if __name__ == '__main__':
 
         prediction, hidden_cell = gru(x, hidden_cell)
         hidden_cell = hidden_cell.data
+        print(hidden_cell)
         loss = loss_func(prediction, y)
         optimizer.zero_grad()
         loss.backward(retain_graph=True)

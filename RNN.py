@@ -9,10 +9,10 @@ class LSTM(nn.Module):
         super(LSTM, self).__init__()
         self.lstm = nn.LSTM(
             input_size=INPUT_SIZE,
-            hidden_size=20,
+            hidden_size=10,
             batch_first=True
         )
-        self.out = nn.Linear(20, 1)
+        self.out = nn.Linear(10, 1)
 
     def forward(self, x, h_state, c_state):
         r_out, (h_state, c_state) = self.lstm(x, (h_state, c_state))
@@ -20,8 +20,8 @@ class LSTM(nn.Module):
         return outputs, h_state, c_state
 
     def InitHidden(self):
-        h_state = torch.rand(1, 1, 20)
-        c_state = torch.rand(1, 1, 20)
+        h_state = torch.rand(1, 1, 10)
+        c_state = torch.rand(1, 1, 10)
         return h_state, c_state
 
 
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     plt.legend(loc='best')
     plt.show()
     lstm = LSTM(INPUT_SIZE=1)
-    optimizer = torch.optim.Adam(lstm.parameters(), lr=0.001)
+    optimizer = torch.optim.Adam(lstm.parameters(), lr=0.1)
     loss_func = nn.MSELoss()
     h_state, c_state = lstm.InitHidden()
     plt.figure(1, figsize=(12, 5))
@@ -53,6 +53,7 @@ if __name__ == '__main__':
         h_state = h_state.data
         c_state = c_state.data
         loss = loss_func(prediction, y)
+        print(loss.data)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()

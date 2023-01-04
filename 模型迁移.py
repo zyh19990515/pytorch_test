@@ -1,3 +1,3 @@
 from torchvision import models
-alexnet = models.alexnet(pretrained=True)
-print(alexnet)
+rn = models.resnet34(pretrained=True)
+print(rn)
